@@ -16,7 +16,9 @@ export class ContactsService {
   async create(createContactDto: CreateContactDto, photo: Express.Multer.File) {
     const userId = Number(createContactDto.userId);
     if (isNaN(userId) || userId <= 0) {
-      throw new BadRequestException('Invalid user ID');
+      throw new BadRequestException(
+        'id do usuário é necessário e deve ser um número válido',
+      );
     }
 
     const user = await this.prisma.user.findUnique({
@@ -24,12 +26,12 @@ export class ContactsService {
     });
 
     if (!user) {
-      throw new NotFoundException(`User with ID ${userId} does not exist`);
+      throw new NotFoundException(`User id ${userId} não existe`);
     }
 
     const photoUrl = await this.cloudinaryService.uploadImage(photo);
     if (!photoUrl) {
-      throw new BadRequestException('Failed to upload photo');
+      throw new BadRequestException('Falha ao fazer upload da foto');
     }
 
     return await this.prisma.contact.create({
@@ -54,6 +56,10 @@ export class ContactsService {
 
     if (!userExists) {
       throw new NotFoundException(`usuario com ID ${userId} não existe`);
+    }
+
+    if (letter && letter.length > 1) {
+      throw new BadRequestException('A letra deve ter apenas um caractere');
     }
 
     const contacts = await this.prisma.contact.findMany({
