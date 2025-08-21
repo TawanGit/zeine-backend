@@ -15,18 +15,32 @@ export class ContactsService {
   ) {}
   async create(createContactDto: CreateContactDto, photo: Express.Multer.File) {
     const userId = Number(createContactDto.userId);
+
     if (isNaN(userId) || userId <= 0) {
       throw new BadRequestException(
-        'id do usuário é necessário e deve ser um número válido',
+        'O id do usuário é necessário e deve ser um número válido',
       );
     }
 
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
+    if (!createContactDto.email) {
+      throw new BadRequestException('O email é obrigatório');
+    }
+
+    const existingContact = await this.prisma.contact.findFirst({
+      where: {
+        email: createContactDto.email,
+        userId: userId,
+      },
     });
 
-    if (!user) {
-      throw new NotFoundException(`User id ${userId} não existe`);
+    if (existingContact) {
+      throw new BadRequestException(
+        'Este email já está cadastrado para este usuário',
+      );
+    }
+
+    if (!photo) {
+      throw new BadRequestException('A foto do contato é obrigatória');
     }
 
     const photoUrl = await this.cloudinaryService.uploadImage(photo);
