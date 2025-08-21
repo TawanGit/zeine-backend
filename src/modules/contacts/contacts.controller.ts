@@ -55,8 +55,8 @@ export class ContactsController {
   })
   @Get()
   findAll(
-    @Query('letter') letter: string,
-    @Query('userId', ParseIntPipe) userId: number,
+    @Query('letter') letter?: string,
+    @Query('userId', ParseIntPipe) userId?: number,
   ) {
     return this.contactsService.findAll(letter, userId);
   }

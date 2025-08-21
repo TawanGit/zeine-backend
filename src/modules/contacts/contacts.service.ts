@@ -43,7 +43,7 @@ export class ContactsService {
     });
   }
 
-  async findAll(letter: string, userId: number) {
+  async findAll(letter: string | undefined, userId: number | undefined) {
     if (!userId) {
       throw new BadRequestException('Invalid user ID');
     }
