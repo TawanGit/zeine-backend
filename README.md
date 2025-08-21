@@ -55,3 +55,5 @@ npm run start:dev
 Acessar Online:
 
 https://zeine-backend.onrender.com/
+
+![Diagrama](image.png)
