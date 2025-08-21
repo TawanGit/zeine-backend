@@ -12,8 +12,6 @@ import {
 import { ContactsService } from './contacts.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { FindContactsDto } from './dto/find-contact-dto';
-import { AuthGuard } from '../auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('contacts')

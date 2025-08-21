@@ -7,8 +7,8 @@ import { createDefaultUser } from './modules/database/seeders/CreateDefaultUser'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const prisma = app.get(PrismaService);
-  await createDefaultUser(prisma);
+  // const prisma = app.get(PrismaService);
+  // await createDefaultUser(prisma);
   app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({
