@@ -4,11 +4,14 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { SignInDto } from 'src/user/dtos/SignInDto';
+
 import * as bcrypt from 'bcrypt';
-import { PrismaService } from 'src/database/prisma.service';
+
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
+import { PrismaService } from '../database/prisma.service';
+import { SignInDto } from '../user/dtos/SignInDto';
+
 @Injectable()
 export class AuthService {
   @Inject()

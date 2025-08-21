@@ -4,12 +4,13 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { Prisma, User } from 'generated/prisma';
-import { PrismaService } from 'src/database/prisma.service';
-import { CreateUserDto } from 'src/dtos/CreateUserDto';
+import { User } from 'generated/prisma';
+
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from './dtos/UserResponseDto';
+import { CreateUserDto } from './dtos/CreateUserDto';
+import { PrismaService } from '../database/prisma.service';
 
 @Injectable()
 export class UserService {
@@ -29,7 +30,7 @@ export class UserService {
   }
 
   async createUser(data: CreateUserDto): Promise<UserResponseDto> {
-    if (!data.email || !data.password || !data.name) {
+    if (!data.email || !data.password) {
       throw new BadRequestException('Name, email and password are required');
     }
 
@@ -42,7 +43,6 @@ export class UserService {
 
     const user = await this.prisma.user.create({
       data: {
-        name: data.name,
         email: data.email,
         password: hashPassword,
       },

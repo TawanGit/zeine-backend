@@ -1,26 +1,80 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateContactDto } from './dto/create-contact.dto';
-import { UpdateContactDto } from './dto/update-contact.dto';
+import { PrismaService } from '../database/prisma.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class ContactsService {
-  create(createContactDto: CreateContactDto) {
-    return 'This action adds a new contact';
+  constructor(
+    private prisma: PrismaService,
+    private cloudinaryService: CloudinaryService,
+  ) {}
+  async create(createContactDto: CreateContactDto, photo: Express.Multer.File) {
+    const userId = Number(createContactDto.userId);
+    if (isNaN(userId) || userId <= 0) {
+      throw new BadRequestException('Invalid user ID');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} does not exist`);
+    }
+
+    const photoUrl = await this.cloudinaryService.uploadImage(photo);
+    if (!photoUrl) {
+      throw new BadRequestException('Failed to upload photo');
+    }
+
+    return await this.prisma.contact.create({
+      data: {
+        email: createContactDto.email,
+        name: createContactDto.name,
+        phone: createContactDto.phone,
+        userId: userId,
+        photo: photoUrl,
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all contacts`;
-  }
+  async findAll(letter: string, userId: number) {
+    if (!userId) {
+      throw new BadRequestException('Invalid user ID');
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} contact`;
-  }
+    const userExists = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
 
-  update(id: number, updateContactDto: UpdateContactDto) {
-    return `This action updates a #${id} contact`;
-  }
+    if (!userExists) {
+      throw new NotFoundException(`User with ID ${userId} does not exist`);
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} contact`;
+    const contacts = await this.prisma.contact.findMany({
+      where: {
+        userId,
+        ...(letter
+          ? {
+              name: {
+                startsWith: letter,
+                mode: 'insensitive',
+              },
+            }
+          : {}),
+      },
+      orderBy: { name: 'asc' },
+    });
+
+    if (!contacts.length) {
+      throw new NotFoundException('No contacts found for this user');
+    }
+
+    return contacts;
   }
 }

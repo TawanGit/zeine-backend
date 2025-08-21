@@ -7,9 +7,8 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { UserService } from './user.service';
-import { User } from 'generated/prisma';
-import { CreateUserDto } from 'src/dtos/CreateUserDto';
 import { UserResponseDto } from './dtos/UserResponseDto';
+import { CreateUserDto } from './dtos/CreateUserDto';
 
 @ApiTags('Users')
 @Controller('user')
