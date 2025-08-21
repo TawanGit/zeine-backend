@@ -91,10 +91,6 @@ export class ContactsService {
       orderBy: { name: 'asc' },
     });
 
-    if (!contacts.length) {
-      throw new NotFoundException('Você não possui contatos cadastrados');
-    }
-
     return contacts;
   }
 }
