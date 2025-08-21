@@ -19,7 +19,7 @@ export class UserService {
 
   async findUser(email: string): Promise<User | null> {
     if (!email) {
-      throw new BadRequestException('Email is required');
+      throw new BadRequestException('Email é necessário');
     }
 
     const user = await this.prisma.user.findUnique({
@@ -31,12 +31,12 @@ export class UserService {
 
   async createUser(data: CreateUserDto): Promise<UserResponseDto> {
     if (!data.email || !data.password) {
-      throw new BadRequestException('Name, email and password are required');
+      throw new BadRequestException('email e senha são necessários');
     }
 
     const userExists = await this.findUser(data.email);
     if (userExists) {
-      throw new BadRequestException('This email is already registered');
+      throw new BadRequestException('Esse email já está cadastrado');
     }
 
     const hashPassword = await bcrypt.hash(data.password, 10);

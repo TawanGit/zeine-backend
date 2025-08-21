@@ -45,7 +45,7 @@ export class ContactsService {
 
   async findAll(letter: string | undefined, userId: number | undefined) {
     if (!userId) {
-      throw new BadRequestException('Invalid user ID');
+      throw new BadRequestException('Id do usuário é necessário');
     }
 
     const userExists = await this.prisma.user.findUnique({
@@ -53,7 +53,7 @@ export class ContactsService {
     });
 
     if (!userExists) {
-      throw new NotFoundException(`User with ID ${userId} does not exist`);
+      throw new NotFoundException(`usuario com ID ${userId} não existe`);
     }
 
     const contacts = await this.prisma.contact.findMany({
@@ -72,7 +72,7 @@ export class ContactsService {
     });
 
     if (!contacts.length) {
-      throw new NotFoundException('No contacts found for this user');
+      throw new NotFoundException('Você não possui contatos cadastrados');
     }
 
     return contacts;
