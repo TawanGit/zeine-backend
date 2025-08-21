@@ -8,11 +8,14 @@ import {
   UseInterceptors,
   UploadedFile,
   ParseIntPipe,
+  Delete,
+  Param,
 } from '@nestjs/common';
 import { ContactsService } from './contacts.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('contacts')
 export class ContactsController {
@@ -24,6 +27,7 @@ export class ContactsController {
   @ApiResponse({ status: 201, description: 'Contact successfully created.' })
   @ApiResponse({ status: 400, description: 'Invalid data.' })
   @UseInterceptors(FileInterceptor('photo'))
+  @UseGuards(AuthGuard)
   create(
     @Body() createContactDto: CreateContactDto,
     @UploadedFile() photo: Express.Multer.File,
@@ -52,10 +56,24 @@ export class ContactsController {
     description: 'No contacts found or user does not exist.',
   })
   @Get()
+  @UseGuards(AuthGuard)
   findAll(
     @Query('userId', ParseIntPipe) userId: number,
     @Query('letter') letter?: string,
   ) {
     return this.contactsService.findAll(letter, userId);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete a contact by ID' })
+  @ApiResponse({ status: 204, description: 'Contact successfully deleted.' })
+  @ApiResponse({ status: 404, description: 'Contact not found.' })
+  @UseGuards(AuthGuard)
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('userId', ParseIntPipe) userId: number, // get userId from query
+  ) {
+    await this.contactsService.delete(id, userId);
+    return { message: 'Contact successfully deleted' };
   }
 }

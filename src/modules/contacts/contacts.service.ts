@@ -93,4 +93,24 @@ export class ContactsService {
 
     return contacts;
   }
+
+  async delete(id: number, userId: number) {
+    if (!id || !userId) {
+      throw new BadRequestException(
+        'Id do contato e do usuário são necessários',
+      );
+    }
+
+    const contact = await this.prisma.contact.findUnique({
+      where: { id, userId },
+    });
+
+    if (!contact) {
+      throw new NotFoundException(`Contato com ID ${id} não encontrado`);
+    }
+
+    return await this.prisma.contact.delete({
+      where: { id },
+    });
+  }
 }
