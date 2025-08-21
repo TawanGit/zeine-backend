@@ -6,6 +6,7 @@ import {
 import { CreateContactDto } from './dto/create-contact.dto';
 import { PrismaService } from '../database/prisma.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { UpdateContactDto } from './dto/update-contact-dto';
 
 @Injectable()
 export class ContactsService {
@@ -111,6 +112,30 @@ export class ContactsService {
 
     return await this.prisma.contact.delete({
       where: { id },
+    });
+  }
+
+  async update(id: number, userId: number, updateContactDto: UpdateContactDto) {
+    if (!id || !userId) {
+      throw new BadRequestException(
+        'Id do contato e do usuário são necessários',
+      );
+    }
+
+    const contact = await this.prisma.contact.findUnique({
+      where: { id, userId },
+    });
+
+    if (!contact) {
+      throw new NotFoundException(`Contato com ID ${id} não encontrado`);
+    }
+
+    return await this.prisma.contact.update({
+      where: { id },
+      data: {
+        ...updateContactDto,
+        userId,
+      },
     });
   }
 }

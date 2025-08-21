@@ -10,12 +10,14 @@ import {
   ParseIntPipe,
   Delete,
   Param,
+  Put,
 } from '@nestjs/common';
 import { ContactsService } from './contacts.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '../auth/auth.guard';
+import { UpdateContactDto } from './dto/update-contact-dto';
 
 @Controller('contacts')
 export class ContactsController {
@@ -75,5 +77,19 @@ export class ContactsController {
   ) {
     await this.contactsService.delete(id, userId);
     return { message: 'Contact successfully deleted' };
+  }
+
+  @Put(':userId/:id')
+  @ApiOperation({ summary: 'Update a contact by ID' })
+  @ApiBody({ type: UpdateContactDto })
+  @ApiResponse({ status: 200, description: 'Contact successfully updated.' })
+  @ApiResponse({ status: 404, description: 'Contact not found.' })
+  @UseGuards(AuthGuard)
+  async update(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateContactDto: UpdateContactDto,
+  ) {
+    return this.contactsService.update(id, userId, updateContactDto);
   }
 }

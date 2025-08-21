@@ -37,14 +37,14 @@ CLOUDINARY_CLOUD_NAME=
 Para ver o mapeamento das rotas, acesse:
 
 ```bash
-http://localhost:3000/api
+http://localhost:3001/api
 ```
 
 5️⃣ Observações finais
 
 Certifique-se de que o PostgreSQL está rodando no host definido no .env.
 
-A porta padrão do backend do projeto é 3000.
+A porta padrão do backend do projeto é 3001.
 
 Depois de configurar e aplicar as migrações, você já pode iniciar o projeto com:
 
