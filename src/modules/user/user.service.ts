@@ -53,27 +53,41 @@ export class UserService {
   }
 
   async update(data: UpdateUserDto, id: number): Promise<UpdateUserDto> {
-    if (!data.email || !data.password) {
-      throw new BadRequestException('email e senha são necessários');
+    if (!data.email) {
+      throw new BadRequestException('Email é necessário');
     }
 
-    const userExists = await this.prisma.user.findUnique({
-      where: { id },
-    });
+    const userExists = await this.prisma.user.findUnique({ where: { id } });
     if (!userExists) {
       throw new NotFoundException('Usuário não encontrado');
     }
 
-    const hashPassword = await bcrypt.hash(data.password, 10);
+    const emailExists = await this.prisma.user.findUnique({
+      where: { email: data.email },
+    });
+    if (emailExists && emailExists.id !== id) {
+      throw new BadRequestException('Esse email já está cadastrado');
+    }
 
     const user = await this.prisma.user.update({
       where: { id },
-      data: {
-        email: data.email,
-        password: hashPassword,
-      },
+      data,
     });
 
-    return plainToInstance(UpdateUserDto, user);
+    const { password, ...userWithoutPassword } = user;
+    return plainToInstance(UpdateUserDto, userWithoutPassword);
+  }
+
+  async delete(id: number): Promise<void> {
+    if (!id) {
+      throw new BadRequestException('Id do usuário é necessário');
+    }
+
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    await this.prisma.user.delete({ where: { id } });
   }
 }

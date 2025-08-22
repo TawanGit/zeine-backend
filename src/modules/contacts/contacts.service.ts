@@ -122,12 +122,25 @@ export class ContactsService {
       );
     }
 
-    const contact = await this.prisma.contact.findUnique({
+    const contact = await this.prisma.contact.findFirst({
       where: { id, userId },
     });
 
     if (!contact) {
       throw new NotFoundException(`Contato com ID ${id} não encontrado`);
+    }
+
+    if (updateContactDto.email) {
+      const emailExists = await this.prisma.contact.findFirst({
+        where: {
+          email: updateContactDto.email,
+          NOT: { id },
+        },
+      });
+
+      if (emailExists) {
+        throw new BadRequestException('Esse email já está cadastrado');
+      }
     }
 
     return await this.prisma.contact.update({
