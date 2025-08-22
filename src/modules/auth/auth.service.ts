@@ -25,7 +25,7 @@ export class AuthService {
 
   async signin(
     signInDto: SignInDto,
-  ): Promise<{ access_token: string; userId: number }> {
+  ): Promise<{ access_token: string; userId: number; email: string }> {
     const user = await this.userService.findUser(signInDto.email);
     if (!user) throw new NotFoundException('Usuário não encontrado');
     const passwordMatch = await bcrypt.compare(
@@ -40,6 +40,7 @@ export class AuthService {
     return {
       access_token: await this.jwtService.signAsync(payload),
       userId: user.id,
+      email: user.email,
     };
   }
 }
