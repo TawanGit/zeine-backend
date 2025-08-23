@@ -21,10 +21,11 @@ model Contact {
   id        Int      @id @default(autoincrement())
   name      String
   photo     String
-  email     String   @unique
+  email     String   
   phone     String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  @@unique([email, userId]) 
 }
