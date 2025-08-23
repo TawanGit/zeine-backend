@@ -115,7 +115,12 @@ export class ContactsService {
     });
   }
 
-  async update(id: number, userId: number, updateContactDto: UpdateContactDto) {
+  async update(
+    id: number,
+    userId: number,
+    updateContactDto: UpdateContactDto,
+    photo: Express.Multer.File,
+  ) {
     if (!id || !userId) {
       throw new BadRequestException(
         'Id do contato e do usuário são necessários',
@@ -142,12 +147,21 @@ export class ContactsService {
         throw new BadRequestException('Esse email já está cadastrado');
       }
     }
+    let newPhoto;
+    if (photo) {
+      const photoUrl = await this.cloudinaryService.uploadImage(photo);
+      if (!photoUrl) {
+        throw new BadRequestException('Falha ao fazer upload da foto');
+      }
+      newPhoto = photoUrl;
+    }
 
     return await this.prisma.contact.update({
       where: { id },
       data: {
         ...updateContactDto,
         userId,
+        ...(newPhoto ? { photo: newPhoto } : {}),
       },
     });
   }

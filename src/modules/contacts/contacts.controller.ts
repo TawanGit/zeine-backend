@@ -85,11 +85,13 @@ export class ContactsController {
   @ApiResponse({ status: 200, description: 'Contact successfully updated.' })
   @ApiResponse({ status: 404, description: 'Contact not found.' })
   @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('photo'))
   async update(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateContactDto: UpdateContactDto,
+    @UploadedFile() photo: Express.Multer.File,
   ) {
-    return this.contactsService.update(id, userId, updateContactDto);
+    return this.contactsService.update(id, userId, updateContactDto, photo);
   }
 }
