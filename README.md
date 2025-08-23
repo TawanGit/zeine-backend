@@ -52,8 +52,31 @@ Depois de configurar e aplicar as migrações, você já pode iniciar o projeto 
 npm run start:dev
 ```
 
-Acessar Online:
+#  Testes
+
+Você pode rodar os testes com: 
+
+```bash
+npm run test
+```
+
+# Arquitetura
+Como é um projeto simples, foi definida uma arquitetura Modular, muito utilizada no NestJS
+
+Temos: Auth, Cloudinary, Database, User, Contacts
+
+Em cada módulo temos services e controllers, onde o controller é responsável por receber a requisição e o service lida com toda a lógica
+
+O modulo database é responsável por se conectar ao banco de dados.
+O modulo cloudinary é responsável pelo storage de fotos. 
+o modulo contact é responsável por lidar com os contatos.
+o modulo user é responsável por lidar os usuários.
+o modulo auth é responsável por lidar com a autenticação.
+
+
+# Acessar Online:
 
 https://zeine-backend.onrender.com/
 
+# Diagrama 
 ![Diagrama](image.png)
