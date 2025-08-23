@@ -139,7 +139,10 @@ export class ContactsService {
       const emailExists = await this.prisma.contact.findFirst({
         where: {
           email: updateContactDto.email,
-          NOT: { id },
+          userId: userId,
+          AND: {
+            id: { not: id },
+          },
         },
       });
 
